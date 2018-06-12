@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>My Route Map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css' rel='stylesheet' />
+	<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js'></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	<script src="routes_geojson_v6.js"></script>  
+	<script src="startAddress_geojson.js"></script>
+	<script src="endAddress_geojson.js"></script>
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoic3V2aWtzaGEiLCJhIjoiY2podGI1aTlzMGJ5MTNrcnoza3htbDduNyJ9.PTYtagSL3W5njNX3sDonBQ';
+var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/mapbox/streets-v9', // stylesheet location        //layer 0
+    center: [72.877, 19.076], // starting position [lng, lat]
+    zoom: 10 // starting zoom
+});
+
+var routeSource={
+		    "type":"geojson",
+			"data":routesCoordinates
+		};
+		
+var routesLayer={
+		    "id":"routes" ,//layer id
+			"source":"routes",
+			"type":"line",
+			"paint":{
+			    "line-color":"black",
+			},
+			"interactive":true
+			
+		};
+		
+var startAddressSource_v5={
+            "type":"geojson",
+			"data":startAddress
+
+};
+
+var startAddressLayer_v5={
+             "id":"startAddress",
+			 "source":"startAddress",
+			 "type":"circle",
+			 "paint":{
+			        "circle-radius":3.5,
+					"circle-color":"red"
+					},
+			  "interactive":true
+};
+
+var endAddressSource_v5={
+             "type":"geojson",
+			 "data":endAddress
+};
+
+var endAddressLayer_v5={
+             "id":"endAddress",
+			 "source":"endAddress",
+			 "type":"circle",
+			 "paint":{
+			        "circle-radius":3.5,
+					"circle-color":"brown",
+					"circle-opacity":0.1
+			 },
+			 "interactive":true
+};
+		
+map.on('style.load',function(){
+		    map.addSource("routes",routeSource);                    //layer 1
+			map.addLayer(routesLayer);
+			map.addSource("startAddress",startAddressSource_v5);    //layer 2
+			map.addLayer(startAddressLayer_v5);
+			map.addSource("endAddress",endAddressSource_v5);        //layer 3
+			map.addLayer(endAddressLayer_v5);
+		});
+		
+map.on("click",function(e){
+            var features=map.queryRenderedFeatures(e.point,{function(err,features){
+			if(!err && features.length){
+			        }
+			        /*map.setFilter('routes',['==','rt_name',features[0].properties.rt_name]);
+			}
+			else{
+			        map.setFilter('routes',['==','rt_name','']);
+			}*/
+			
+			}}
+			);
+			console.log("start_address"+features[1].properties.start_address);
+			console.log("end_address"+ features[0].properties.end_address);
+			
+			
+});
+
+
+
+
+</script>
+
+</body>
+</html>
